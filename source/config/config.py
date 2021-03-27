@@ -7,24 +7,26 @@
 import os
 from common import error
 
+
 class Config:
     """
     설정용 config class
     """
-    #kafka_host = os.environ.get("KAFKA_HOST", "192.168.0.4:9092").split(",")
-    kafka_host = os.environ.get("KAFKA_HOST", "localhost:9092")
+    kafka_host = os.environ.get("KAFKA_HOST", "0.0.0.0:29092")
     topic = "test"
 
     kafka_conf = {
         'bootstrap.servers': kafka_host,
+        'broker.address.family': 'v4',
         'retries': 0,
         'error_cb': error,
     }
+
+    json_path = "./data/url_list.json"
 
 
     def __init__(self):
         pass
 
+
 config = Config()
-
-
