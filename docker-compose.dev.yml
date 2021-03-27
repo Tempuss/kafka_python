@@ -1,0 +1,63 @@
+services:
+  zk-1:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zk-1
+    ports:
+      - "2181:2181"
+    restart: always
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - kafka-network
+    logging:
+      driver: json-file
+      options:
+        max-size: "1g"
+        max-file: "5"
+
+  kk-1:
+    image: confluentinc/cp-kafka:latest
+    container_name: kk-1
+    ports:
+      - "9092:9092"
+    restart: always
+    depends_on:
+      - zk-1
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_BROKER_RACK: rack-a
+      KAFKA_ZOOKEEPER_CONNECT: zk:2181
+      KAFKA_JMX_PORT: 9999
+      KAFKA_JMX_HOSTNAME: kk-1
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://192.168.188.102:9092'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kk:9092
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zk:2181
+    networks:
+      - kafka-network
+    logging:
+      driver: json-file
+      options:
+        max-size: "1g"
+        max-file: "5"
+
+  kafka-manager:
+    image: dylanmei/kafka-manager:latest
+    container_name: kafka-manager
+    ports:
+      - "9000:9000"
+    environment:
+      ZK_HOSTS: zk-1:2181
+      KM_ARGS: -Djava.net.preferIPv4Stack=true
+    logging:
+      driver: json-file
+      options:
+        max-size: "180m"
+        max-file: "10"
+    networks:
+      - kafka-network
+
+networks:
+  kafka-network:
+    driver: bridge
