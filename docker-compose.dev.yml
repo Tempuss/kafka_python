@@ -48,8 +48,8 @@ services:
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
       CONNECT_PLUGIN_PATH: '/usr/share/java'
-    volumes:
-      - ./connect/postgres-source.json:/connect/postgres-source.json
+    #volumes:
+      #- ./connect/postgres-source.json:/connect/postgres-source.json
 
   kafka1:
     image: confluentinc/cp-kafka:latest
