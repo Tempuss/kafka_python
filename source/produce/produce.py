@@ -10,39 +10,40 @@ import json
 
 sys.path.append(os.getcwd())
 
-from confluent_kafka import Producer
+from confluent_kafka import (
+    Producer,
+    KafkaError,
+    KafkaException,
+)
+
 from json import (
     dumps,
     load,
 )
 from config import config
+from common import acked
 
+
+# Create Connection
 try:
-    producer = Producer(**config.kafka_conf)
+    producer = Producer(**config.kafka_produce_conf)
 except Exception as ex:
     print(ex)
-    sys.exit()
 
-
-def acked(err, msg):
-    if err is not None:
-        print("Failed to deliver message: %s: %s" % (str(msg), str(err)))
-    else:
-        print(msg)
-        print(f"Message produced: {msg.offset()}")
-
+# Load Json File
 with open(config.json_path) as json_file:
     json_data = json.load(json_file)
 
-print(json_data)
-
-for i in range(1):
-    data = {'str': 'result' + str(i)}
+# Produce URL data
+for url in json_data:
+    data = {"url": url}
     producer.produce(
-        topic=config.topic,
+        topic=config.kafka_topic,
         value=dumps(data).encode('utf-8'),
         callback=acked
     )
     producer.flush()
+    producer.len()
 
+producer.close()
 quit()
