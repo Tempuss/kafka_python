@@ -43,7 +43,6 @@ for url in json_data:
         callback=acked
     )
     producer.flush()
-    producer.len()
 
-producer.close()
+#producer.close()
 quit()

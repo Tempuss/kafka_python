@@ -29,6 +29,11 @@ def test_producer():
     producer = Producer(**config.kafka_produce_conf)
     yield producer
 
+@pytest.fixture(scope="function")
+def test_consumer():
+    consumer = Consumer(**config.kafka_consumer_conf)
+    yield consumer
+
 
 @pytest.fixture(scope="function")
 def init_produce_data(
@@ -43,4 +48,3 @@ def init_produce_data(
         )
         test_producer.flush()
 
-        return test_producer
