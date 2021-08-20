@@ -5,11 +5,14 @@
 # @copyright    Tempuss All rights reserved.
 #
 import pytest
+import sys
+import os
 from json import (
     dumps,
     load,
     loads,
 )
+sys.path.append(os.getcwd())
 
 from tests.mock_data import (
     mock_url_list,
@@ -24,8 +27,8 @@ class TestKafkaProducer:
 
     def acked(self, error, msg):
         #todo callback event를 이용해서 offset과 value 값 테스트 방안 필요
-        print(msg.offset())
-        print(loads(msg.value()))
+        #print(msg.offset())
+        #print(loads(msg.value()))
         return msg.offset()
 
     def test_produce_success(
@@ -48,3 +51,4 @@ class TestKafkaProducer:
         assert len(mock_url_list) is produce_offset
         assert left_queue is 0
         assert 1 is 1
+

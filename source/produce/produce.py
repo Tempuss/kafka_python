@@ -23,7 +23,6 @@ from json import (
 from config import config
 from common import acked
 
-
 # Create Connection
 try:
     producer = Producer(**config.kafka_produce_conf)
@@ -34,6 +33,7 @@ except Exception as ex:
 with open(config.json_path) as json_file:
     json_data = json.load(json_file)
 
+
 # Produce URL data
 for url in json_data:
     data = {"url": url}
@@ -43,7 +43,8 @@ for url in json_data:
         callback=acked
     )
     producer.flush()
-    producer.len()
 
-producer.close()
+
+producer.flush()
+# producer.close()
 quit()

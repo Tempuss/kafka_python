@@ -24,23 +24,29 @@ from confluent_kafka import (
 )
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def test_producer():
     producer = Producer(**config.kafka_produce_conf)
     yield producer
 
+@pytest.fixture(scope="session")
+def test_consumer():
+    consumer = Consumer(**config.kafka_consumer_conf)
+    yield consumer
 
-@pytest.fixture(scope="function")
+
+@pytest.fixture(scope="session")
 def init_produce_data(
         test_producer,
 ):
     for url in mock_url_list:
         data = {"url": url}
         test_producer.produce(
-            topic=test_topic,
+            topic=config.kafka_topic,
             value=dumps(data).encode('utf-8'),
             callback=acked
         )
         test_producer.flush()
 
-        return test_producer
+    yield test_producer
+

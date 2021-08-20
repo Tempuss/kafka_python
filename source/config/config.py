@@ -25,7 +25,6 @@ class Config:
         'bootstrap.servers': kafka_host,
         'broker.address.family': 'v4',
         'group.id': "1",
-        'retries': 0,
         'error_cb': error,
     }
 
