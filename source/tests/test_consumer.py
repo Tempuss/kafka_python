@@ -5,6 +5,10 @@
 # @copyright    Tempuss All rights reserved.
 #
 import pytest
+import sys, os
+import subprocess
+sys.path.append(os.getcwd())
+
 from json import (
     dumps,
     load,
@@ -15,42 +19,38 @@ from tests.mock_data import (
     mock_url_list,
     test_topic,
 )
-
 from confluent_kafka import (
     KafkaError,
     KafkaException,
 )
-
+from config import config
 
 class TestKafkaConsumer:
     def setUp(self):
-        self.topic = "TEST_TOPIC"
         pass
 
     def test_consume_success(
             self,
-            init_produce_data,
             test_consumer,
     ):
         running = True
-        test_consumer.subscribe([test_topic])
+        test_consumer.subscribe([config.kafka_topic])
+        # subprocess.call(["pytest -s tests/test_produce.py"])
+        subprocess.Popen(
+            [f"python produce/produce.py"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
         while running:
-
             msg = test_consumer.poll(timeout=1.0)
             if msg is None: continue
 
             if msg.error():
-                if msg.error().code() == KafkaError._PARTITION_EOF:
-                    # End of partition event
-                    print(msg.topic(), msg.partition(), msg.offset())
-                elif msg.error():
-                    raise KafkaException(msg.error())
+                assert msg.error() is False
             else:
                 running = False
-                print(msg)
+                assert msg.value() is not None
 
-        #assert msg is not None
+            # 지속적인 produce를 위해서 pytest 코드를 서브프로세스로 실행
 
         test_consumer.close()
-
-        pass

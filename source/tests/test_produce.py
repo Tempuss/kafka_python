@@ -5,11 +5,14 @@
 # @copyright    Tempuss All rights reserved.
 #
 import pytest
+import sys
+import os
 from json import (
     dumps,
     load,
     loads,
 )
+sys.path.append(os.getcwd())
 
 from tests.mock_data import (
     mock_url_list,
@@ -44,9 +47,8 @@ class TestKafkaProducer:
             # Return Number of Callback events
             produce_offset += test_producer.poll()
             left_queue = test_producer.flush()
-            print(left_queue)
 
-        print(produce_offset)
         assert len(mock_url_list) is produce_offset
         assert left_queue is 0
         assert 1 is 1
+
